@@ -1,7 +1,9 @@
-import 'package:auramusic/database/favorite/dbmodel/fav_model.dart';
-import 'package:auramusic/database/playlist/playlistmodel/playlist_model.dart';
-import 'package:auramusic/screens/splash_screen.dart';
+import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/domain/favmodel/dbmodel/fav_model.dart';
+import 'package:auramusic/domain/playlist/hiveplaylistmodel/playlist_model.dart';
+import 'package:auramusic/presentation/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:flutter/services.dart';
 
@@ -25,15 +27,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
-        primaryColor: const Color(0xFF0B0E38),
-        scaffoldBackgroundColor: const Color(0xFF0B0E38),
+    return BlocProvider(
+      create: (context) => MusicBloc(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.indigo,
+          primaryColor: const Color(0xFF0B0E38),
+          scaffoldBackgroundColor: const Color(0xFF0B0E38),
+        ),
+        home: const SplashScreen(),
+        title: 'AURA',
       ),
-      home: const SplashScreen(),
-      title: 'AURA',
     );
   }
 }
