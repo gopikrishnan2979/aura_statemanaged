@@ -1,4 +1,5 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/miniplyr_state_bloc/miniplayer_bloc.dart';
+import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
 import 'package:auramusic/presentation/screens/inside_playlist.dart';
 import 'package:auramusic/presentation/screens/mini_player.dart';
 import 'package:auramusic/domain/playlist/ui_model/playlist.dart';
@@ -21,9 +22,9 @@ class PlaylistScrn extends StatelessWidget {
             colors: [Color(0xFF000000), Color(0xFF0B0E38), Color(0xFF202EAF)],
           ),
         ),
-        child: BlocBuilder<MusicBloc, MusicState>(
-          builder: (context, state) {
-            if (state.currentlyplaying != null) {
+        child: BlocBuilder<MiniplayerBloc, MiniplayerState>(
+          builder: (context, curstate) {
+            if (curstate.isactive) {
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                 showBottomSheet(
                     context: context,
@@ -31,9 +32,13 @@ class PlaylistScrn extends StatelessWidget {
                     builder: (context) => const MiniPlayer());
               });
             }
-            return state.playListobjects.isEmpty
+            return BlocBuilder<PlaylistBloc, PlaylistState>(
+                    builder: (context, playliststate) {
+                      return playliststate.playlist.isEmpty
                 ? playlistempty()
-                : gridcard(context, state);
+                :  gridcard(context, playliststate);
+                    },
+                  );
           },
         ),
       ),
@@ -61,7 +66,7 @@ class PlaylistScrn extends StatelessWidget {
     );
   }
 
-  Widget gridcard(BuildContext ctx, MusicState state) {
+  Widget gridcard(BuildContext ctx, PlaylistState state) {
     double paddingsize = MediaQuery.of(ctx).size.width * 0.1;
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -71,11 +76,11 @@ class PlaylistScrn extends StatelessWidget {
       ),
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) => InkWell(
-        child: elementgridcard(context, index, state),
+        child: elementgridcard(context, index,state),
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (_) => BlocProvider.value(
-              value: BlocProvider.of<MusicBloc>(context),
+              value: BlocProvider.of<PlaylistBloc>(context),
               child: InsidePlaylist(
                 currentplaylistindex: index,
               ),
@@ -83,16 +88,16 @@ class PlaylistScrn extends StatelessWidget {
           ));
         },
       ),
-      itemCount: state.playListobjects.length,
+      itemCount: state.playlist.length,
       padding: EdgeInsets.only(
-          bottom: state.playListobjects.length >= 8 ? paddingsize : 20,
+          bottom: state.playlist.length >= 8 ? paddingsize : 20,
           top: paddingsize,
           left: paddingsize,
           right: paddingsize),
     );
   }
 
-  Widget elementgridcard(ctx, index, MusicState state) {
+  Widget elementgridcard(BuildContext ctx,int index,PlaylistState state) {
     return Material(
       borderRadius: BorderRadius.circular(10),
       elevation: 3,
@@ -114,7 +119,7 @@ class PlaylistScrn extends StatelessWidget {
                 child: PopupMenuButton(
                   onSelected: (value) {
                     value == 1
-                        ? renamePlaylist(ctx, index, state)
+                        ? renamePlaylist(ctx, index,state)
                         : deletePlaylist(index, ctx);
                   },
                   shape: RoundedRectangleBorder(
@@ -162,7 +167,7 @@ class PlaylistScrn extends StatelessWidget {
                       top: MediaQuery.of(ctx).size.width * 0.015,
                       left: MediaQuery.of(ctx).size.width * 0.05),
                   child: Text(
-                    state.playListobjects[index].name,
+                    state.playlist[index].name,
                     style: const TextStyle(
                         color: Color.fromARGB(255, 0, 0, 0), fontSize: 18),
                   ),
@@ -173,10 +178,10 @@ class PlaylistScrn extends StatelessWidget {
     );
   }
 
-  renamePlaylist(BuildContext context, int index, MusicState state) {
+  renamePlaylist(BuildContext context, int index,PlaylistState state) {
     final GlobalKey<FormState> renamekey = GlobalKey();
     var rename = TextEditingController();
-    String currentname = state.playListobjects[index].name;
+    String currentname = state.playlist[index].name;
     rename.text = currentname;
     return showDialog(
       context: context,
@@ -207,7 +212,7 @@ class PlaylistScrn extends StatelessWidget {
                   return 'Name is required';
                 }
                 value = value.trim();
-                for (EachPlaylist element in state.playListobjects) {
+                for (EachPlaylist element in state.playlist) {
                   if (element.name == value) {
                     return 'Name already exist';
                   }
@@ -216,9 +221,8 @@ class PlaylistScrn extends StatelessWidget {
               },
               onFieldSubmitted: (value) {
                 if (renamekey.currentState!.validate()) {
-                  BlocProvider.of<MusicBloc>(context).add(
-                      PlaylistEvent.isrenaming(
-                          newname: rename.text.trim(), playlistIndex: index));
+                  BlocProvider.of<PlaylistBloc>(context).add(
+                      PlaylistE.isrenaming(newname: rename.text.trim(), playlistIndex: index));
                   Navigator.pop(context);
                 }
               },
@@ -229,8 +233,8 @@ class PlaylistScrn extends StatelessWidget {
           TextButton(
               onPressed: () {
                 if (renamekey.currentState!.validate()) {
-                  BlocProvider.of<MusicBloc>(context).add(
-                      PlaylistEvent.isrenaming(
+                  BlocProvider.of<PlaylistBloc>(context).add(
+                      PlaylistE.isrenaming(
                           newname: rename.text.trim(), playlistIndex: index));
                   Navigator.pop(context);
                 }
@@ -271,8 +275,8 @@ class PlaylistScrn extends StatelessWidget {
           TextButton(
               onPressed: () {
                 //playlist deleting
-                BlocProvider.of<MusicBloc>(context)
-                    .add(PlaylistEvent.isdeleting(playlistIndex: index));
+                BlocProvider.of<PlaylistBloc>(context)
+                    .add(PlaylistE.isdeleting(playlistIndex: index));
                 Navigator.pop(context);
               },
               child: const Text('Delete')),

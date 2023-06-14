@@ -1,5 +1,6 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
 import 'package:auramusic/domain/songs/songs.dart';
+import 'package:auramusic/infrastructure/functions/player_function.dart';
 import 'package:auramusic/presentation/screens/mini_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,8 +11,8 @@ class PlaylistInsidePart1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MusicBloc, MusicState>(
-      builder: (context, state) {
+    return BlocBuilder<PlaylistBloc, PlaylistState>(
+      builder: (context, playliststate) {
         return Column(
           children: [
             SizedBox(
@@ -35,26 +36,23 @@ class PlaylistInsidePart1 extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        state.playListobjects[currentplaylistindex].name,
+                        playliststate.playlist[currentplaylistindex].name,
                         style:
                             const TextStyle(fontSize: 20, color: Colors.white),
                       ),
                       Text(
-                        '${state.playListobjects[currentplaylistindex].container.length} songs',
+                        '${playliststate.playlist[currentplaylistindex].container.length} songs',
                         style: const TextStyle(color: Colors.white),
                       ),
                     ],
                   ),
-                  state.playListobjects[currentplaylistindex].container.isEmpty
+                  playliststate.playlist[currentplaylistindex].container.isEmpty
                       ? const SizedBox()
                       : InkWell(
                           onTap: () {
-                            List<Songs> playlist = state
-                                .playListobjects[currentplaylistindex]
-                                .container;
-                            BlocProvider.of<MusicBloc>(context).add(
-                                PlayingEvent(
-                                    playlist: playlist, playingIndex: 0));
+                            List<Songs> playlist = playliststate
+                                .playlist[currentplaylistindex].container;
+                            playAudio(songs: playlist, index: 0);
                             showModalBottomSheet(
                                 enableDrag: false,
                                 context: context,

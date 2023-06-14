@@ -1,5 +1,7 @@
 part of 'playlist_bloc.dart';
 
-abstract class PlaylistState {}
+class PlaylistState {
+List<EachPlaylist> playlist;
+PlaylistState({required this.playlist});
+}
 
-class PlaylistInitial extends PlaylistState {}

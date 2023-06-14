@@ -5,9 +5,15 @@ class FavoriteEvent {}
 class GetAllFavorite extends FavoriteEvent {}
 
 class FavoriteAddorRemove extends FavoriteEvent {
-  bool isRemoving;
-  bool isAdding;
+  late bool isRemoving;
+  late bool isAdding;
   Songs song;
-  FavoriteAddorRemove(
-      {required this.song, this.isAdding = false, this.isRemoving = false});
+  FavoriteAddorRemove.add({required this.song}) {
+    isAdding = true;
+    isRemoving = false;
+  }
+  FavoriteAddorRemove.remove({required this.song}) {
+    isAdding = false;
+    isRemoving = true;
+  }
 }

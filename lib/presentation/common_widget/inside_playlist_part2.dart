@@ -1,4 +1,6 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/favorite_bloc/favorite_bloc.dart';
+import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
+import 'package:auramusic/infrastructure/functions/player_function.dart';
 import 'package:auramusic/presentation/common_widget/favoritewidget.dart';
 import 'package:auramusic/presentation/common_widget/listtilecustom.dart';
 import 'package:auramusic/presentation/core/style.dart';
@@ -14,9 +16,9 @@ class PlaylistInsidePart2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MusicBloc, MusicState>(
-      builder: (context, state) {
-        final playlist = state.playListobjects[currentplaylistindex];
+    return BlocBuilder<PlaylistBloc, PlaylistState>(
+      builder: (context, playliststate) {
+        final playlist = playliststate.playlist[currentplaylistindex];
         return Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 10, bottom: 10),
@@ -26,7 +28,7 @@ class PlaylistInsidePart2 extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: InkWell(
                   onTap: () {},
-                  child: listtile(context, index, state),
+                  child: listtile(context, index, playliststate),
                 ),
               ),
               itemCount: playlist.container.length,
@@ -37,12 +39,12 @@ class PlaylistInsidePart2 extends StatelessWidget {
     );
   }
 
-  listtile(BuildContext context, int idx, MusicState state) {
-    EachPlaylist playlist = state.playListobjects[currentplaylistindex];
+  listtile(BuildContext context, int idx, PlaylistState playliststate) {
+    EachPlaylist playlist = playliststate.playlist[currentplaylistindex];
     return InkWell(
       onTap: () {
-        BlocProvider.of<MusicBloc>(context)
-            .add(PlayingEvent(playlist: playlist.container, playingIndex: idx));
+        
+        playAudio(songs: playlist.container, index: idx);
         showModalBottomSheet(
             context: context,
             shape:
@@ -86,9 +88,13 @@ class PlaylistInsidePart2 extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               fontSize: artistfontsize),
         ),
-        trailing1: FavoriteButton(
-          isfav: state.favorite.contains(playlist.container[idx]),
-          currentSong: playlist.container[idx],
+        trailing1: BlocBuilder<FavoriteBloc, FavoriteState>(
+          builder: (context, favstate) {
+            return FavoriteButton(
+              isfav: favstate.favorite.contains(playlist.container[idx]),
+              currentSong: playlist.container[idx],
+            );
+          },
         ),
         trailing2: Theme(
           data: Theme.of(context).copyWith(cardColor: const Color(0xFF87BEFF)),
@@ -109,12 +115,10 @@ class PlaylistInsidePart2 extends StatelessWidget {
                     )
                   ],
               onSelected: (value) {
-                BlocProvider.of<MusicBloc>(context).add(
-                    PlaylistEvent.songAddorRemove(
-                        songtooperation: playlist.container[idx],
-                        playlistIndex: currentplaylistindex,
-                        isaddingsong: false,
-                        isremovingsong: true));
+                BlocProvider.of<PlaylistBloc>(context).add(
+                    PlaylistI.songRemoving(
+                        song: playlist.container[idx],
+                        playlistIndex: currentplaylistindex));
               }),
         ),
         tilecolor: const Color(0xFF939DF5),

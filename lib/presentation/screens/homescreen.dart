@@ -1,4 +1,9 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/favorite_bloc/favorite_bloc.dart';
+import 'package:auramusic/application/miniplyr_state_bloc/miniplayer_bloc.dart';
+import 'package:auramusic/application/mostplayed_bloc/mostplayed_bloc.dart';
+import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
+import 'package:auramusic/application/recent_bloc/recent_bloc.dart';
+import 'package:auramusic/infrastructure/functions/player_function.dart';
 import 'package:auramusic/presentation/common_widget/favoritewidget.dart';
 import 'package:auramusic/presentation/common_widget/listtilecustom.dart';
 import 'package:auramusic/presentation/core/style.dart';
@@ -17,13 +22,12 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // double screenwidth = MediaQuery.of(context).size.width;
     return SafeArea(
         child: Scaffold(
             backgroundColor: const Color(0xFF202EB0),
-            body: BlocBuilder<MusicBloc, MusicState>(
-              builder: (context, state) {
-                if (state.currentlyplaying != null) {
+            body: BlocBuilder<MiniplayerBloc, MiniplayerState>(
+              builder: (context, ministate) {
+                if (ministate.isactive) {
                   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                     showBottomSheet(
                         context: context,
@@ -69,8 +73,9 @@ class HomeScreen extends StatelessWidget {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
                                         builder: (_) => BlocProvider.value(
-                                          value: BlocProvider.of<MusicBloc>(
-                                              context),
+                                          value:
+                                              BlocProvider.of<MostPlayedBloc>(
+                                                  context),
                                           child: const MostPlayedScrn(),
                                         ),
                                       ));
@@ -90,7 +95,7 @@ class HomeScreen extends StatelessWidget {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
                                         builder: (_) => BlocProvider.value(
-                                          value: BlocProvider.of<MusicBloc>(
+                                          value: BlocProvider.of<RecentBloc>(
                                               context),
                                           child: const RecentScrn(),
                                         ),
@@ -109,7 +114,7 @@ class HomeScreen extends StatelessWidget {
                                 height: 10,
                               ),
                               // creates the list in homescreen
-                              listtile(state, context),
+                              listtile(context),
                             ],
                           ),
                         ),
@@ -179,15 +184,13 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  listtile(MusicState state, BuildContext context) {
+  listtile(BuildContext context) {
     return Expanded(
       child: ListView.builder(
-        // physics: const NeverScrollableScrollPhysics(),
-        // shrinkWrap: true,
         itemBuilder: (context, index) => InkWell(
             onTap: () {
-              BlocProvider.of<MusicBloc>(context)
-                  .add(PlayingEvent(playlist: allsongs, playingIndex: index));
+              playAudio(songs: allsongs, index: index);
+              BlocProvider.of<MiniplayerBloc>(context).add(MiniplayerEvent());
             },
             child: ListTileCustom(
               context: context,
@@ -225,9 +228,13 @@ class HomeScreen extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     fontSize: artistfontsize),
               ),
-              trailing1: FavoriteButton(
-                isfav: state.favorite.contains(allsongs[index]),
-                currentSong: allsongs[index],
+              trailing1: BlocBuilder<FavoriteBloc, FavoriteState>(
+                builder: (context, favstate) {
+                  return FavoriteButton(
+                    isfav: favstate.favorite.contains(allsongs[index]),
+                    currentSong: allsongs[index],
+                  );
+                },
               ),
               trailing2: Theme(
                 data: Theme.of(context)
@@ -251,7 +258,7 @@ class HomeScreen extends StatelessWidget {
                   onSelected: (value) =>
                       Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => BlocProvider.value(
-                      value: BlocProvider.of<MusicBloc>(context),
+                      value: BlocProvider.of<PlaylistBloc>(context),
                       child: AddToPlaylist(addingsong: allsongs[index]),
                     ),
                   )),

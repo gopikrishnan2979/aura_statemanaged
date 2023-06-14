@@ -3,7 +3,7 @@ import 'package:auramusic/domain/playlist/ui_model/playlist.dart';
 import 'package:auramusic/domain/songs/songs.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-//create a playlist
+//------------------------------create a playlist---------------------------------
 Future<List<EachPlaylist>> playlistcreating(
     {required String playlistName,
     required List<EachPlaylist> playlists}) async {
@@ -13,7 +13,7 @@ Future<List<EachPlaylist>> playlistcreating(
   return playlists;
 }
 
-//playlist deleting
+//------------------------------playlist deleting---------------------------------
 Future<List<EachPlaylist>> playlistdelete(
     {required List<EachPlaylist> playlist, required int index}) async {
   Box<PlaylistClass> playlistdb = await Hive.openBox('playlist');
@@ -22,7 +22,7 @@ Future<List<EachPlaylist>> playlistdelete(
   return playlist;
 }
 
-//playlist renaming
+//------------------------------playlist renaming---------------------------------
 Future<List<EachPlaylist>> playlistrename(
     {required int index,
     required List<EachPlaylist> playlist,
@@ -36,7 +36,7 @@ Future<List<EachPlaylist>> playlistrename(
   return playlist;
 }
 
-//Songs adding to playlist
+//-----------------------------Songs adding to playlist---------------------------
 Future<List<EachPlaylist>> songAddToPlaylist(
     {required Songs addingsong,
     required List<EachPlaylist> playlist,
@@ -50,7 +50,7 @@ Future<List<EachPlaylist>> songAddToPlaylist(
   return playlist;
 }
 
-//song remove from playlist
+//-----------------------------Song remove from playlist--------------------------
 Future<List<EachPlaylist>> songRemoveFromPlaylist(
     {required Songs removingsong,
     required List<EachPlaylist> playlist,

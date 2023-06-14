@@ -2,8 +2,9 @@ import 'package:auramusic/domain/favmodel/dbmodel/fav_model.dart';
 import 'package:auramusic/domain/songs/songs.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-Future<List<Songs>>addfavorite(Songs song) async {
-  List<Songs> favorite = [];
+
+//------------Song adding to favorite function----------
+Future<List<Songs>>addfavorite(Songs song,List<Songs> favorite) async {
   favorite.insert(0, song);
   Box<FavModel> favdb = await Hive.openBox('favorite');
   FavModel temp = FavModel(id: song.id);
@@ -12,8 +13,9 @@ Future<List<Songs>>addfavorite(Songs song) async {
   return favorite;
 }
 
-removefavorite(Songs song) async {
-  List<Songs> favorite = [];
+
+//-----------Song removing to favorite function-----------
+removefavorite(Songs song,List<Songs> favorite) async {
   favorite.remove(song);
   List<FavModel> templist = [];
   Box<FavModel> favdb = await Hive.openBox('favorite');

@@ -1,6 +1,5 @@
 import 'package:auramusic/core/data_structure.dart';
 import 'package:auramusic/domain/favmodel/dbmodel/fav_model.dart';
-import 'package:auramusic/domain/fetchdata/fetchdata.dart';
 import 'package:auramusic/domain/playlist/hiveplaylistmodel/playlist_model.dart';
 import 'package:auramusic/domain/playlist/ui_model/playlist.dart';
 import 'package:auramusic/domain/songs/songs.dart';
@@ -8,7 +7,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
+//---------------------------------------Fetching songs--------------------------------
+
 final OnAudioQuery audioquerry = OnAudioQuery();
+
+//--------------------Taking permission for the app to fetch audio files from the storage------------------
 requestPermission() async {
   PermissionStatus status = await Permission.storage.request();
   if (status.isGranted) {
@@ -17,6 +20,8 @@ requestPermission() async {
     return false;
   }
 }
+
+//--------------------Fetching songs from the internal memory and adding to the allsong list---------------
 
 Future allsongfetch() async {
   bool status = await requestPermission();
@@ -27,6 +32,7 @@ Future allsongfetch() async {
         orderType: OrderType.ASC_OR_SMALLER,
         sortType: null,
         uriType: UriType.EXTERNAL);
+  //-------------------only taking mp3 files from the device----------------
     for (SongModel element in fetchsongs) {
       if (element.fileExtension == "mp3") {
         allsongs.add(Songs(
@@ -40,6 +46,8 @@ Future allsongfetch() async {
   }
 }
 
+
+//--------------Fetching favorite songs from the database-------------
 Future<List<Songs>> favfetch() async {
   List<FavModel> favsongcheck = [];
   Box<FavModel> favdb = await Hive.openBox('favorite');
@@ -63,6 +71,8 @@ Future<List<Songs>> favfetch() async {
   return favorite;
 }
 
+//--------------Fetching Playlist from the database-------------
+
 Future<List<EachPlaylist>> playlistfetch() async {
   Box<PlaylistClass> playlistdb = await Hive.openBox('playlist');
   List<EachPlaylist> playlist = [];
@@ -81,6 +91,8 @@ Future<List<EachPlaylist>> playlistfetch() async {
   }
   return playlist;
 }
+
+//--------------Fetching mostplayed songs from the database-------------
 
 Future<List<Songs>> mostplayedfetch() async {
   Box<int> mostplayedDb = await Hive.openBox('mostplayed');
@@ -119,6 +131,9 @@ Future<List<Songs>> mostplayedfetch() async {
   }
   return mostplayedlist;
 }
+
+
+//--------------Fetching recently played songs from the database-------------
 
 Future<List<Songs>> recentfetch() async {
   Box<int> recentDb = await Hive.openBox('recent');

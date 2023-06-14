@@ -1,4 +1,7 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/favorite_bloc/favorite_bloc.dart';
+import 'package:auramusic/application/mostplayed_bloc/mostplayed_bloc.dart';
+import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
+import 'package:auramusic/application/recent_bloc/recent_bloc.dart';
 import 'package:auramusic/domain/favmodel/dbmodel/fav_model.dart';
 import 'package:auramusic/domain/playlist/hiveplaylistmodel/playlist_model.dart';
 import 'package:auramusic/presentation/screens/splash_screen.dart';
@@ -27,8 +30,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MusicBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<FavoriteBloc>(
+          create: (BuildContext context) => FavoriteBloc(),
+        ),
+        BlocProvider<MostPlayedBloc>(
+          create: (BuildContext context) => MostPlayedBloc(),
+        ),
+        BlocProvider<RecentBloc>(
+          create: (BuildContext context) => RecentBloc(),
+        ),
+        BlocProvider<PlaylistBloc>(
+          create: (BuildContext context) => PlaylistBloc(),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

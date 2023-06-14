@@ -1,6 +1,10 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/mostplayed_bloc/mostplayed_bloc.dart';
+import 'package:auramusic/application/recent_bloc/recent_bloc.dart';
+import 'package:auramusic/application/repeat_cubit/repeat_cubit.dart';
+import 'package:auramusic/application/shuffle_cubit/shuffle_cubit.dart';
 import 'package:auramusic/core/data_structure.dart';
+import 'package:auramusic/infrastructure/functions/player_function.dart';
 import 'package:auramusic/presentation/screens/play_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,9 +13,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import 'package:auramusic/presentation/core/style.dart';
 
 class MiniPlayer extends StatelessWidget {
-  const MiniPlayer({
-    super.key,
-  });
+  const MiniPlayer({super.key});
   @override
   Widget build(BuildContext context) {
     bool isenteredtomostplayed = false;
@@ -21,7 +23,13 @@ class MiniPlayer extends StatelessWidget {
       onTap: () {
         // playing screen code have to be written here
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => const PlayingScreen(),
+          builder: (_) =>  MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: BlocProvider.of<ShuffleCubit>(context)),
+                BlocProvider.value(value: BlocProvider.of<RepeatCubit>(context)),
+              ],
+              child: const PlayingScreen(),
+            )
         ));
       },
       child: Padding(
@@ -35,8 +43,8 @@ class MiniPlayer extends StatelessWidget {
           child: player.builderCurrent(
             builder: (context, playing) {
               int id = int.parse(playing.audio.audio.metas.id!);
-              BlocProvider.of<MusicBloc>(context)
-                  .add(RecentAdding(playingIndex: id));
+              BlocProvider.of<RecentBloc>(context).add(RecentAdd(songid: id));
+              currentlyplayingfinder(playingId: id);
               return Column(
                 children: [
                   Padding(
@@ -175,9 +183,8 @@ class MiniPlayer extends StatelessWidget {
                                 if (!isenteredtomostplayed && value > 0.5) {
                                   int id =
                                       int.parse(playing.audio.audio.metas.id!);
-                                  // currentsongfinder(id);
-                                  BlocProvider.of<MusicBloc>(context)
-                                      .add(MostPlayedAddEvent(songid: id));
+                                  BlocProvider.of<MostPlayedBloc>(context)
+                                      .add(MostPlayedAdd(songid: id));
                                   isenteredtomostplayed = true;
                                 }
 

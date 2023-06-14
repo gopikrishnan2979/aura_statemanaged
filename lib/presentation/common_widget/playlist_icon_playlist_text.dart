@@ -1,4 +1,4 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
 import 'package:auramusic/core/data_structure.dart';
 import 'package:auramusic/domain/playlist/ui_model/playlist.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class PlaylistIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     isadded = playlist.container.contains(allsongs[index]);
 
-    return BlocBuilder<MusicBloc, MusicState>(
+    return BlocBuilder<PlaylistBloc, PlaylistState>(
       builder: (context, state) {
         return IconButton(
             onPressed: () {
@@ -41,21 +41,17 @@ class PlaylistIcon extends StatelessWidget {
     );
   }
 
-  addingOrRemoving(MusicState state, BuildContext context) {
-    if (!state.playListobjects[currentplaylistindex].container
+  addingOrRemoving(PlaylistState playliststate, BuildContext context) {
+    if (!playliststate.playlist[currentplaylistindex].container
         .contains(allsongs[index])) {
-      BlocProvider.of<MusicBloc>(context).add(PlaylistEvent.songAddorRemove(
-          songtooperation: allsongs[index],
-          playlistIndex: currentplaylistindex,
-          isaddingsong: true,
-          isremovingsong: false));
+      BlocProvider.of<PlaylistBloc>(context).add(PlaylistI.songAdding(
+          song: allsongs[index],
+          playlistIndex: currentplaylistindex,));
       isadded = true;
     } else {
-      BlocProvider.of<MusicBloc>(context).add(PlaylistEvent.songAddorRemove(
-          songtooperation: allsongs[index],
-          playlistIndex: currentplaylistindex,
-          isaddingsong: false,
-          isremovingsong: true));
+      BlocProvider.of<PlaylistBloc>(context).add(PlaylistI.songRemoving(
+          song: allsongs[index],
+          playlistIndex: currentplaylistindex,));
       isadded = false;
     }
   }

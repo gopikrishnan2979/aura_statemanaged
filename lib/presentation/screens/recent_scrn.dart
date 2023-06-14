@@ -1,4 +1,8 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/favorite_bloc/favorite_bloc.dart';
+import 'package:auramusic/application/miniplyr_state_bloc/miniplayer_bloc.dart';
+import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
+import 'package:auramusic/application/recent_bloc/recent_bloc.dart';
+import 'package:auramusic/infrastructure/functions/player_function.dart';
 import 'package:auramusic/presentation/common_widget/favoritewidget.dart';
 import 'package:auramusic/presentation/common_widget/listtilecustom.dart';
 import 'package:auramusic/presentation/core/style.dart';
@@ -58,9 +62,9 @@ class RecentScrn extends StatelessWidget {
                     ),
                   ),
                 ),
-                BlocBuilder<MusicBloc, MusicState>(
-                  builder: (context, state) => Expanded(
-                    child: listtilebuilder(state),
+                BlocBuilder<RecentBloc, RecentState>(
+                  builder: (context, resstate) => Expanded(
+                    child: listtilebuilder(resstate),
                   ),
                 )
               ],
@@ -80,8 +84,8 @@ class RecentScrn extends StatelessWidget {
     );
   }
 
-  Widget listtilebuilder(MusicState state) {
-    return state.recentList.isEmpty
+  Widget listtilebuilder(RecentState resstate) {
+    return resstate.recentlist.isEmpty
         ? songlistempty()
         : ListView.builder(
             padding:
@@ -89,8 +93,9 @@ class RecentScrn extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) => InkWell(
               onTap: () {
-                BlocProvider.of<MusicBloc>(context).add(PlayingEvent(
-                    playlist: state.recentList, playingIndex: index));
+                
+                playAudio(songs: resstate.recentlist, index: index);
+                BlocProvider.of<MiniplayerBloc>(context).add(MiniplayerEvent());
                 showModalBottomSheet(
                     context: context,
                     shape: RoundedRectangleBorder(
@@ -107,7 +112,7 @@ class RecentScrn extends StatelessWidget {
                   artworkQuality: FilterQuality.high,
                   artworkBorder: BorderRadius.circular(10),
                   artworkFit: BoxFit.cover,
-                  id: state.recentList[index].id,
+                  id: resstate.recentlist[index].id,
                   type: ArtworkType.AUDIO,
                   nullArtworkWidget: ClipRRect(
                     borderRadius: BorderRadius.circular(7),
@@ -118,21 +123,26 @@ class RecentScrn extends StatelessWidget {
                 ),
                 tilecolor: const Color(0xFF939DF5),
                 title: Text(
-                  state.recentList[index].songname!,
+                  resstate.recentlist[index].songname!,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       overflow: TextOverflow.ellipsis,
                       fontSize: songnamefontsize,
                       color: fontcolor),
                 ),
-                subtitle: Text(state.recentList[index].artist!,
+                subtitle: Text(resstate.recentlist[index].artist!,
                     style: const TextStyle(
                         overflow: TextOverflow.ellipsis,
                         fontSize: artistfontsize,
                         color: fontcolor)),
-                trailing1: FavoriteButton(
-                    isfav: state.favorite.contains(state.recentList[index]),
-                    currentSong: state.recentList[index]),
+                trailing1: BlocBuilder<FavoriteBloc, FavoriteState>(
+                  builder: (context, state) {
+                    return FavoriteButton(
+                        isfav:
+                            state.favorite.contains(resstate.recentlist[index]),
+                        currentSong: resstate.recentlist[index]);
+                  },
+                ),
                 trailing2: Theme(
                   data: Theme.of(context)
                       .copyWith(cardColor: const Color(0xFF87BEFF)),
@@ -146,15 +156,15 @@ class RecentScrn extends StatelessWidget {
                       onSelected: (value) =>
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => BlocProvider.value(
-                              value: BlocProvider.of<MusicBloc>(context),
+                              value: BlocProvider.of<PlaylistBloc>(context),
                               child: AddToPlaylist(
-                                  addingsong: state.recentList[index]),
+                                  addingsong: resstate.recentlist[index]),
                             ),
                           ))),
                 ),
               ),
             ),
-            itemCount: state.recentList.length,
+            itemCount: resstate.recentlist.length,
           );
   }
 }

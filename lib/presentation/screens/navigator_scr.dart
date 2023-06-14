@@ -1,4 +1,5 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/nav_bloc/bloc/nav_bloc.dart';
+import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
 import 'package:auramusic/presentation/common_widget/appbar.dart';
 import 'package:auramusic/presentation/common_widget/drawer.dart';
 import 'package:auramusic/presentation/screens/favorite.dart';
@@ -37,36 +38,39 @@ class NavigatorScrn extends StatelessWidget {
       child: SafeArea(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          body: BlocBuilder<MusicBloc, MusicState>(
+          body: BlocBuilder<NavBloc, NavState>(
             builder: (contextbloc, state) {
               return Scaffold(
-                backgroundColor: backgroundcolor[state.navIdx],
+                backgroundColor: backgroundcolor[state.navindex],
                 drawer: const DrawerWidget(),
                 appBar: PreferredSize(
                   preferredSize:
                       Size(MediaQuery.of(contextbloc).size.width, 200),
-                  child: appbarselector(state.navIdx, context, state),
+                  child: appbarselector(
+                    state.navindex,
+                    context,
+                  ),
                 ),
-                body: screens[state.navIdx],
+                body: screens[state.navindex],
                 bottomNavigationBar: CurvedNavigationBar(
                   items: [
                     FaIcon(FontAwesomeIcons.houseChimney,
-                        color: state.navIdx == 0 ? color : Colors.white),
+                        color: state.navindex == 0 ? color : Colors.white),
                     Center(
                         child: FaIcon(FontAwesomeIcons.indent,
-                            color: state.navIdx == 1 ? color : Colors.white)),
+                            color: state.navindex == 1 ? color : Colors.white)),
                     FaIcon(
                       Icons.favorite,
-                      color: state.navIdx == 2 ? color : Colors.white,
+                      color: state.navindex == 2 ? color : Colors.white,
                     ),
                     FaIcon(FontAwesomeIcons.magnifyingGlass,
-                        color: state.navIdx == 3 ? color : Colors.white)
+                        color: state.navindex == 3 ? color : Colors.white)
                   ],
                   color: const Color(0xFF0C113F),
                   backgroundColor: const Color.fromARGB(0, 0, 0, 0),
                   onTap: (navidx) {
-                    BlocProvider.of<MusicBloc>(context)
-                        .add(NavigationEvent(index: navidx));
+                    BlocProvider.of<NavBloc>(context)
+                        .add(NavEvent(index: navidx));
                   },
                 ),
               );
@@ -77,7 +81,7 @@ class NavigatorScrn extends StatelessWidget {
     );
   }
 
-  Widget appbarselector(int index, BuildContext context, MusicState state) {
+  Widget appbarselector(int index, BuildContext context) {
     if (index == 0) {
       return GradientAppBar(action: [Image.asset('assets/images/aura.png')]);
     } else if (index == 1) {
@@ -91,7 +95,7 @@ class NavigatorScrn extends StatelessWidget {
                 builder: (contex) => Padding(
                     padding: EdgeInsets.only(
                         bottom: MediaQuery.of(context).viewInsets.bottom),
-                    child: showbottomsheetmodel(context, state)),
+                    child: showbottomsheetmodel(context)),
               );
             },
             icon: const FaIcon(
@@ -130,7 +134,9 @@ class NavigatorScrn extends StatelessWidget {
     }
   }
 
-  Widget showbottomsheetmodel(BuildContext context, MusicState state) {
+  Widget showbottomsheetmodel(
+    BuildContext context,
+  ) {
     final GlobalKey<FormState> playlistformkey = GlobalKey();
     var playlistController = TextEditingController();
 
@@ -165,42 +171,48 @@ class NavigatorScrn extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 child: SizedBox(
                   height: 70,
-                  child: Form(
-                    key: playlistformkey,
-                    child: TextFormField(
-                      autofocus: true,
-                      keyboardType: TextInputType.name,
-                      controller: playlistController,
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.trim().isEmpty) {
-                          return 'Name is required';
-                        }
-                        value = value.trim();
-                        for (EachPlaylist element in state.playListobjects) {
-                          if (element.name == value) {
-                            return 'Name already exist';
-                          }
-                        }
-                        return null;
-                      },
-                      style: const TextStyle(fontSize: 19),
-                      decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          filled: true,
-                          hintText: 'Enter the name',
-                          hintStyle: TextStyle(fontSize: 19),
-                          fillColor: Colors.white),
-                      maxLength: 10,
-                      onFieldSubmitted: (value) {
-                        if (playlistformkey.currentState!.validate()) {
-                          BlocProvider.of<MusicBloc>(context).add(
-                              PlaylistEvent.createnew(newname: value.trim()));
-                          Navigator.pop(context);
-                        }
-                      },
-                    ),
+                  child: BlocBuilder<PlaylistBloc, PlaylistState>(
+                    builder: (context, playliststate) {
+                      return Form(
+                        key: playlistformkey,
+                        child: TextFormField(
+                          autofocus: true,
+                          keyboardType: TextInputType.name,
+                          controller: playlistController,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                value.trim().isEmpty) {
+                              return 'Name is required';
+                            }
+                            value = value.trim();
+                            for (EachPlaylist element
+                                in playliststate.playlist) {
+                              if (element.name == value) {
+                                return 'Name already exist';
+                              }
+                            }
+                            return null;
+                          },
+                          style: const TextStyle(fontSize: 19),
+                          decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              filled: true,
+                              hintText: 'Enter the name',
+                              hintStyle: TextStyle(fontSize: 19),
+                              fillColor: Colors.white),
+                          maxLength: 10,
+                          onFieldSubmitted: (value) {
+                            if (playlistformkey.currentState!.validate()) {
+                              BlocProvider.of<PlaylistBloc>(context).add(
+                                  PlaylistE.createnew(
+                                      newname: value.trim()));
+                              Navigator.pop(context);
+                            }
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -217,8 +229,8 @@ class NavigatorScrn extends StatelessWidget {
                       onPressed: () {
                         String playlistName = playlistController.text.trim();
                         if (playlistformkey.currentState!.validate()) {
-                           BlocProvider.of<MusicBloc>(context).add(
-                              PlaylistEvent.createnew(newname: playlistName));
+                          BlocProvider.of<PlaylistBloc>(context).add(
+                              PlaylistE.createnew(newname: playlistName));
                           Navigator.pop(context);
                         }
                       },

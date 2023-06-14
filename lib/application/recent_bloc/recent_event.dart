@@ -7,6 +7,6 @@ class RecentFetch extends RecentEvent{
 }
 
 class RecentAdd extends RecentEvent{
-  Songs song;
-  RecentAdd({required this.song});
+  int songid;
+  RecentAdd({required this.songid});
 }

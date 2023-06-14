@@ -1,4 +1,8 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/favorite_bloc/favorite_bloc.dart';
+import 'package:auramusic/application/miniplyr_state_bloc/miniplayer_bloc.dart';
+import 'package:auramusic/application/mostplayed_bloc/mostplayed_bloc.dart';
+import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
+import 'package:auramusic/infrastructure/functions/player_function.dart';
 import 'package:auramusic/presentation/common_widget/favoritewidget.dart';
 import 'package:auramusic/presentation/common_widget/listtilecustom.dart';
 import 'package:auramusic/presentation/core/style.dart';
@@ -51,10 +55,10 @@ class MostPlayedScrn extends StatelessWidget {
                   ),
                 ),
               ),
-              BlocBuilder<MusicBloc, MusicState>(
-                builder: (context, state) {
+              BlocBuilder<MostPlayedBloc, MostPlayedState>(
+                builder: (context, mosstate) {
                   return Expanded(
-                    child: state.mostPlayedList.isEmpty
+                    child: mosstate.mostPlayedList.isEmpty
                         ? songlistempty()
                         : ListView.builder(
                             physics: const BouncingScrollPhysics(),
@@ -62,10 +66,11 @@ class MostPlayedScrn extends StatelessWidget {
                                 left: 10, right: 10, top: 10, bottom: 30),
                             itemBuilder: (context, index) => InkWell(
                               onTap: () {
-                                BlocProvider.of<MusicBloc>(context).add(
-                                    PlayingEvent(
-                                        playlist: state.mostPlayedList,
-                                        playingIndex: index));
+                                playAudio(
+                                    songs: mosstate.mostPlayedList,
+                                    index: index);
+                                BlocProvider.of<MiniplayerBloc>(context)
+                                    .add(MiniplayerEvent());
                                 showModalBottomSheet(
                                     enableDrag: false,
                                     context: context,
@@ -84,7 +89,7 @@ class MostPlayedScrn extends StatelessWidget {
                                   artworkQuality: FilterQuality.high,
                                   artworkBorder: BorderRadius.circular(7),
                                   artworkFit: BoxFit.cover,
-                                  id: state.mostPlayedList[index].id,
+                                  id: mosstate.mostPlayedList[index].id,
                                   type: ArtworkType.AUDIO,
                                   nullArtworkWidget: ClipRRect(
                                     borderRadius: BorderRadius.circular(7),
@@ -95,7 +100,7 @@ class MostPlayedScrn extends StatelessWidget {
                                 ),
                                 tilecolor: const Color(0xFF939DF5),
                                 title: Text(
-                                  state.mostPlayedList[index].songname!,
+                                  mosstate.mostPlayedList[index].songname!,
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: songnamefontsize,
@@ -103,15 +108,21 @@ class MostPlayedScrn extends StatelessWidget {
                                       color: fontcolor),
                                 ),
                                 subtitle: Text(
-                                    state.mostPlayedList[index].artist!,
+                                    mosstate.mostPlayedList[index].artist!,
                                     style: const TextStyle(
                                         overflow: TextOverflow.ellipsis,
                                         fontSize: artistfontsize,
                                         color: fontcolor)),
-                                trailing1: FavoriteButton(
-                                    isfav: state.favorite
-                                        .contains(state.mostPlayedList[index]),
-                                    currentSong: state.mostPlayedList[index]),
+                                trailing1:
+                                    BlocBuilder<FavoriteBloc, FavoriteState>(
+                                  builder: (context, favstate) {
+                                    return FavoriteButton(
+                                        isfav: favstate.favorite.contains(
+                                            mosstate.mostPlayedList[index]),
+                                        currentSong:
+                                            mosstate.mostPlayedList[index]);
+                                  },
+                                ),
                                 trailing2: Theme(
                                   data: Theme.of(context).copyWith(
                                       cardColor: const Color(0xFF87BEFF)),
@@ -130,17 +141,18 @@ class MostPlayedScrn extends StatelessWidget {
                                     onSelected: (value) => Navigator.of(context)
                                         .push(MaterialPageRoute(
                                       builder: (context) => BlocProvider.value(
-                                        value: BlocProvider.of<MusicBloc>(context),
+                                        value: BlocProvider.of<PlaylistBloc>(
+                                            context),
                                         child: AddToPlaylist(
                                             addingsong:
-                                                state.mostPlayedList[index]),
+                                                mosstate.mostPlayedList[index]),
                                       ),
                                     )),
                                   ),
                                 ),
                               ),
                             ),
-                            itemCount: state.mostPlayedList.length,
+                            itemCount: mosstate.mostPlayedList.length,
                           ),
                   );
                 },

@@ -1,4 +1,4 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
 import 'package:auramusic/presentation/common_widget/inside_playlist_part1.dart';
 import 'package:auramusic/presentation/common_widget/inside_playlist_part2.dart';
 import 'package:auramusic/presentation/common_widget/listtilecustom.dart';
@@ -24,8 +24,8 @@ class InsidePlaylist extends StatelessWidget {
               colors: [Color(0xFF000000), Color(0xFF0B0E38), Color(0xFF202EAF)],
             ),
           ),
-          child: BlocBuilder<MusicBloc, MusicState>(
-            builder: (context, state) {
+          child: BlocBuilder<PlaylistBloc, PlaylistState>(
+            builder: (context, playliststate) {
               return Column(
                   children: [
                     SizedBox(
@@ -54,7 +54,7 @@ class InsidePlaylist extends StatelessWidget {
                                       backgroundColor: const Color(0xFF0C113F),
                                       context: context,
                                       builder: (context) =>
-                                          bottomsheetallsongs(context,state));
+                                          bottomsheetallsongs(context,playliststate));
                                 },
                                 icon: const Icon(
                                   Icons.add_to_photos,
@@ -69,7 +69,7 @@ class InsidePlaylist extends StatelessWidget {
                     ),
                     PlaylistInsidePart1(
                         currentplaylistindex: currentplaylistindex),
-                    state.playListobjects
+                    playliststate.playlist
                             [currentplaylistindex].container.isEmpty
                         ? const Expanded(
                             child: SizedBox(
@@ -96,7 +96,7 @@ class InsidePlaylist extends StatelessWidget {
     );
   }
 
-  bottomsheetallsongs(BuildContext context,MusicState state) {
+  bottomsheetallsongs(BuildContext context,PlaylistState playliststate) {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -147,7 +147,7 @@ class InsidePlaylist extends StatelessWidget {
                 style: const TextStyle(overflow: TextOverflow.ellipsis),
               ),
               trailing2: PlaylistIcon(
-                  playlist: state.playListobjects[currentplaylistindex],
+                  playlist: playliststate.playlist[currentplaylistindex],
                   index: index,
                   currentplaylistindex: currentplaylistindex),
               tilecolor: const Color(0xFFF5B265),

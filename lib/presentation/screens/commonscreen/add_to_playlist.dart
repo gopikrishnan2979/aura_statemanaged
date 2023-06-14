@@ -1,4 +1,4 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
 import 'package:auramusic/domain/playlist/ui_model/playlist.dart';
 import 'package:auramusic/domain/songs/songs.dart';
 import 'package:flutter/material.dart';
@@ -45,8 +45,8 @@ class AddToPlaylist extends StatelessWidget {
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                     const Spacer(),
-                    BlocBuilder<MusicBloc, MusicState>(
-                      builder: (context, state) {
+                    BlocBuilder<PlaylistBloc, PlaylistState>(
+                      builder: (context, playliststate) {
                         return IconButton(
                             onPressed: () {
                               showModalBottomSheet(
@@ -59,7 +59,7 @@ class AddToPlaylist extends StatelessWidget {
                                             .viewInsets
                                             .bottom),
                                     child: showbottomsheetmodel(
-                                      context,state.playListobjects
+                                      context,playliststate.playlist
                                     )),
                               );
                             },
@@ -74,10 +74,10 @@ class AddToPlaylist extends StatelessWidget {
                 ),
               ),
             ),
-            BlocBuilder<MusicBloc, MusicState>(
+            BlocBuilder<PlaylistBloc, PlaylistState>(
               builder: (context, state) {
                 return Expanded(
-                  child: state.playListobjects.isEmpty
+                  child: state.playlist.isEmpty
                       ? playlistempty()
                       : gridcard(state, context),
                 );
@@ -110,7 +110,7 @@ class AddToPlaylist extends StatelessWidget {
     );
   }
 
-  Widget gridcard(MusicState state, BuildContext ctx) {
+  Widget gridcard(PlaylistState state, BuildContext ctx) {
     double paddingsize = MediaQuery.of(ctx).size.width * 0.1;
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -119,28 +119,26 @@ class AddToPlaylist extends StatelessWidget {
         mainAxisSpacing: MediaQuery.of(ctx).size.width * 0.1,
       ),
       itemBuilder: (context, index) => elementgridcard(context, index, state),
-      itemCount: state.playListobjects.length,
+      itemCount: state.playlist.length,
       padding: EdgeInsets.only(
-          bottom: state.playListobjects.length >= 8 ? paddingsize : 20,
+          bottom: state.playlist.length >= 8 ? paddingsize : 20,
           top: paddingsize,
           left: paddingsize,
           right: paddingsize),
     );
   }
 
-  Widget elementgridcard(BuildContext ctx, int index, MusicState state) {
+  Widget elementgridcard(BuildContext ctx, int index, PlaylistState state) {
     return Material(
       borderRadius: BorderRadius.circular(10),
       elevation: 3,
       child: InkWell(
         onTap: () {
-          if (!state.playListobjects[index].container.contains(addingsong)) {
+          if (!state.playlist[index].container.contains(addingsong)) {
             // playListNotifier.value[index].container.add(addingsong);
-            BlocProvider.of<MusicBloc>(ctx).add(PlaylistEvent.songAddorRemove(
-                songtooperation: addingsong,
-                playlistIndex: index,
-                isaddingsong: true,
-                isremovingsong: false));
+            BlocProvider.of<PlaylistBloc>(ctx).add(PlaylistI.songAdding(
+                song: addingsong,
+                playlistIndex: index,));
             ScaffoldMessenger.of(ctx)
               ..removeCurrentSnackBar()
               ..showSnackBar(SnackBar(
@@ -151,7 +149,7 @@ class AddToPlaylist extends StatelessWidget {
                   backgroundColor: Colors.green,
                   content: Center(
                       child: Text(
-                          'Song Added to ${state.playListobjects[index].name}'))));
+                          'Song Added to ${state.playlist[index].name}'))));
           } else {
             ScaffoldMessenger.of(ctx)
               ..removeCurrentSnackBar()
@@ -188,7 +186,7 @@ class AddToPlaylist extends StatelessWidget {
                         top: MediaQuery.of(ctx).size.width * 0.015,
                         left: MediaQuery.of(ctx).size.width * 0.05),
                     child: Text(
-                      state.playListobjects[index].name,
+                      state.playlist[index].name,
                       style: const TextStyle(
                           color: Color(0xFF0812FF), fontSize: 18),
                     ),
@@ -263,8 +261,8 @@ class AddToPlaylist extends StatelessWidget {
                       maxLength: 10,
                       onFieldSubmitted: (value) {
                         if (playlistformkey.currentState!.validate()) {
-                          BlocProvider.of<MusicBloc>(context)
-                              .add(PlaylistEvent.createnew(newname: value));
+                          BlocProvider.of<PlaylistBloc>(context)
+                              .add(PlaylistE.createnew(newname: value));
                           Navigator.pop(context);
                         }
                       },
@@ -285,8 +283,8 @@ class AddToPlaylist extends StatelessWidget {
                       onPressed: () {
                         String playlistName = playlistController.text.trim();
                         if (playlistformkey.currentState!.validate()) {
-                          BlocProvider.of<MusicBloc>(context).add(
-                              PlaylistEvent.createnew(newname: playlistName));
+                          BlocProvider.of<PlaylistBloc>(context).add(
+                              PlaylistE.createnew(newname: playlistName));
                           Navigator.pop(context);
                         }
                       },

@@ -1,4 +1,4 @@
-import 'package:auramusic/application/music/music_bloc.dart';
+import 'package:auramusic/application/favorite_bloc/favorite_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:auramusic/domain/songs/songs.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,18 +19,18 @@ class FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MusicBloc, MusicState>(
+    return BlocBuilder<FavoriteBloc, FavoriteState>(
       builder: (context, state) {
         return InkWell(
             onTap: () {
               if (!state.favorite.contains(currentSong)) {
                 isfav = true;
-                BlocProvider.of<MusicBloc>(context)
-                    .add(FavoriteEvent(song: currentSong,isAdding: true));
+                BlocProvider.of<FavoriteBloc>(context)
+                    .add(FavoriteAddorRemove.add(song: currentSong));
                 snackbar(text: 'Added to liked', color: Colors.green,context: context);
               } else {
-                BlocProvider.of<MusicBloc>(context)
-                    .add(FavoriteEvent(song: currentSong,isRemoving: true));
+                BlocProvider.of<FavoriteBloc>(context)
+                    .add(FavoriteAddorRemove.remove(song: currentSong));
                 isfav = false;
                 snackbar(text: 'Removed from liked', color: Colors.red,context: context);
               }

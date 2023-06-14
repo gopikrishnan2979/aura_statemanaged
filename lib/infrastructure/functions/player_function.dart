@@ -1,11 +1,11 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:auramusic/core/data_structure.dart';
-import 'package:auramusic/infrastructure/database_functions/recent/recently_played.dart';
 import 'package:auramusic/domain/songs/songs.dart';
 
-Future<Songs> playAudio(
+//------------Playing the song model by converting it to audio files------------
+Future<void> playAudio(
     {required List<Songs> songs, required int index}) async {
-  Songs currentlyplaying = songs[index];
+currentlyplaying = songs[index];
   player.stop();
   playinglistAudio = [];
   for (int i = 0; i < songs.length; i++) {
@@ -16,6 +16,7 @@ Future<Songs> playAudio(
           id: songs[i].id.toString(),
         )));
   }
+  //-------Making the audios play------
   await player.open(
       Playlist(
         audios: playinglistAudio,
@@ -24,15 +25,17 @@ Future<Songs> playAudio(
       showNotification: true,
       notificationSettings: const NotificationSettings(stopEnabled: false));
   player.setLoopMode(LoopMode.playlist);
-  return currentlyplaying;
+
 }
 
-Songs? currentlyplayingfinder({required int playingId}) {
+
+//---------Finding currently playing song from the list---------
+currentlyplayingfinder({required int playingId}) {
+
   for (Songs song in allsongs) {
     if (song.id == playingId) {
-      return song;
+      currentlyplaying = song;
     }
   }
-  // List<Songs> recent =
-  //     await recentadd(recentList: recentlist, song: currentlyplaying!);
+
 }
