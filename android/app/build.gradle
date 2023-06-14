@@ -30,6 +30,7 @@ def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
+
 android {
     compileSdkVersion 33
     ndkVersion flutter.ndkVersion
@@ -72,7 +73,7 @@ android {
        }
    }
 
-}q
+}
 
 flutter {
     source '../..'
