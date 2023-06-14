@@ -21,8 +21,10 @@ class FavoriteBloc extends Bloc<FavoriteEvent, FavoriteState> {
     on<FavoriteAddorRemove>((event, emit) async {
       List<Songs> fav = [];
       if (event.isAdding) {
+        //Fav adding----
         fav = await addfavorite(event.song,state.favorite);
       } else if (event.isRemoving) {
+        //Fav removing----
         fav = await removefavorite(event.song,state.favorite);
       }
       return emit(FavoriteState(favorite: fav));
