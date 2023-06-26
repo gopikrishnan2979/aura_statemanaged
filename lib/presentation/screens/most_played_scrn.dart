@@ -2,6 +2,8 @@ import 'package:auramusic/application/favorite_bloc/favorite_bloc.dart';
 import 'package:auramusic/application/miniplyr_state_bloc/miniplayer_bloc.dart';
 import 'package:auramusic/application/mostplayed_bloc/mostplayed_bloc.dart';
 import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
+import 'package:auramusic/application/repeat_cubit/repeat_cubit.dart';
+import 'package:auramusic/application/shuffle_cubit/shuffle_cubit.dart';
 import 'package:auramusic/infrastructure/functions/player_function.dart';
 import 'package:auramusic/presentation/common_widget/favoritewidget.dart';
 import 'package:auramusic/presentation/common_widget/listtilecustom.dart';
@@ -56,7 +58,7 @@ class MostPlayedScrn extends StatelessWidget {
                 ),
               ),
               BlocBuilder<MostPlayedBloc, MostPlayedState>(
-                builder: (context, mosstate) {
+                builder: (mostcontext, mosstate) {
                   return Expanded(
                     child: mosstate.mostPlayedList.isEmpty
                         ? songlistempty()
@@ -78,7 +80,15 @@ class MostPlayedScrn extends StatelessWidget {
                                         borderRadius:
                                             BorderRadius.circular(12)),
                                     backgroundColor: const Color(0xFF202EAF),
-                                    builder: (context) => const MiniPlayer());
+                                    builder:  (_) => MultiBlocProvider(
+                          providers: [
+                            BlocProvider.value(
+                                value: BlocProvider.of<ShuffleCubit>(context)),
+                            BlocProvider.value(
+                                value: BlocProvider.of<RepeatCubit>(context))
+                          ],
+                          child: const MiniPlayer(),
+                        ));
                               },
                               child: ListTileCustom(
                                 index: index,

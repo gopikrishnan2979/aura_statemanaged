@@ -1,5 +1,7 @@
 import 'package:auramusic/application/favorite_bloc/favorite_bloc.dart';
 import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
+import 'package:auramusic/application/repeat_cubit/repeat_cubit.dart';
+import 'package:auramusic/application/shuffle_cubit/shuffle_cubit.dart';
 import 'package:auramusic/infrastructure/functions/player_function.dart';
 import 'package:auramusic/presentation/common_widget/favoritewidget.dart';
 import 'package:auramusic/presentation/common_widget/listtilecustom.dart';
@@ -26,10 +28,7 @@ class PlaylistInsidePart2 extends StatelessWidget {
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) => Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
-                child: InkWell(
-                  onTap: () {},
-                  child: listtile(context, index, playliststate),
-                ),
+                child: listtile(context, index, playliststate),
               ),
               itemCount: playlist.container.length,
             ),
@@ -43,14 +42,23 @@ class PlaylistInsidePart2 extends StatelessWidget {
     EachPlaylist playlist = playliststate.playlist[currentplaylistindex];
     return InkWell(
       onTap: () {
-        
         playAudio(songs: playlist.container, index: idx);
         showModalBottomSheet(
             context: context,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             backgroundColor: const Color(0xFF202EAF),
-            builder: (context) => const MiniPlayer());
+            builder: (_) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(
+                        value: BlocProvider.of<PlaylistBloc>(context)),
+                    BlocProvider.value(
+                        value: BlocProvider.of<ShuffleCubit>(context)),
+                    BlocProvider.value(
+                        value: BlocProvider.of<RepeatCubit>(context))
+                  ],
+                  child: const MiniPlayer(),
+                ));
       },
       child: ListTileCustom(
         context: context,

@@ -3,6 +3,8 @@ import 'package:auramusic/application/miniplyr_state_bloc/miniplayer_bloc.dart';
 import 'package:auramusic/application/mostplayed_bloc/mostplayed_bloc.dart';
 import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
 import 'package:auramusic/application/recent_bloc/recent_bloc.dart';
+import 'package:auramusic/application/repeat_cubit/repeat_cubit.dart';
+import 'package:auramusic/application/shuffle_cubit/shuffle_cubit.dart';
 import 'package:auramusic/infrastructure/functions/player_function.dart';
 import 'package:auramusic/presentation/common_widget/favoritewidget.dart';
 import 'package:auramusic/presentation/common_widget/listtilecustom.dart';
@@ -26,7 +28,7 @@ class HomeScreen extends StatelessWidget {
         child: Scaffold(
             backgroundColor: const Color(0xFF202EB0),
             body: BlocBuilder<MiniplayerBloc, MiniplayerState>(
-              builder: (context, ministate) {
+              builder: (minicontext, ministate) {
                 if (ministate.isactive) {
                   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                     showBottomSheet(
@@ -72,13 +74,28 @@ class HomeScreen extends StatelessWidget {
                                     onTap: () {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
-                                        builder: (_) => BlocProvider.value(
-                                          value:
-                                              BlocProvider.of<MostPlayedBloc>(
-                                                  context),
-                                          child: const MostPlayedScrn(),
-                                        ),
-                                      ));
+                                              builder: (_) => MultiBlocProvider(
+                                                    providers: [
+                                                      BlocProvider.value(
+                                                          value: BlocProvider
+                                                              .of<MostPlayedBloc>(
+                                                                  context)),
+                                                      BlocProvider.value(
+                                                          value: BlocProvider
+                                                              .of<ShuffleCubit>(
+                                                                  context)),
+                                                      BlocProvider.value(
+                                                          value: BlocProvider
+                                                              .of<RepeatCubit>(
+                                                                  context)),
+                                                      BlocProvider.value(
+                                                          value: BlocProvider
+                                                              .of<MiniplayerBloc>(
+                                                                  context))
+                                                    ],
+                                                    child:
+                                                        const MostPlayedScrn(),
+                                                  )));
                                     },
                                     child: librarycard(
                                         context: context,
@@ -94,11 +111,28 @@ class HomeScreen extends StatelessWidget {
                                     onTap: () {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
-                                        builder: (_) => BlocProvider.value(
-                                          value: BlocProvider.of<RecentBloc>(
-                                              context),
-                                          child: const RecentScrn(),
-                                        ),
+                                        builder: (_) => MultiBlocProvider(
+                                                    providers: [
+                                                      BlocProvider.value(
+                                                          value: BlocProvider
+                                                              .of<RecentBloc>(
+                                                                  context)),
+                                                      BlocProvider.value(
+                                                          value: BlocProvider
+                                                              .of<ShuffleCubit>(
+                                                                  context)),
+                                                      BlocProvider.value(
+                                                          value: BlocProvider
+                                                              .of<RepeatCubit>(
+                                                                  context)),
+                                                      BlocProvider.value(
+                                                          value: BlocProvider
+                                                              .of<MiniplayerBloc>(
+                                                                  context))
+                                                    ],
+                                                    child:
+                                                        const RecentScrn(),
+                                                  )
                                       ));
                                     },
                                   )

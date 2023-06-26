@@ -1,5 +1,7 @@
 import 'package:auramusic/application/miniplyr_state_bloc/miniplayer_bloc.dart';
 import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
+import 'package:auramusic/application/repeat_cubit/repeat_cubit.dart';
+import 'package:auramusic/application/shuffle_cubit/shuffle_cubit.dart';
 import 'package:auramusic/presentation/screens/inside_playlist.dart';
 import 'package:auramusic/presentation/screens/mini_player.dart';
 import 'package:auramusic/domain/playlist/ui_model/playlist.dart';
@@ -33,12 +35,12 @@ class PlaylistScrn extends StatelessWidget {
               });
             }
             return BlocBuilder<PlaylistBloc, PlaylistState>(
-                    builder: (context, playliststate) {
-                      return playliststate.playlist.isEmpty
-                ? playlistempty()
-                :  gridcard(context, playliststate);
-                    },
-                  );
+              builder: (context, playliststate) {
+                return playliststate.playlist.isEmpty
+                    ? playlistempty()
+                    : gridcard(context, playliststate);
+              },
+            );
           },
         ),
       ),
@@ -76,11 +78,17 @@ class PlaylistScrn extends StatelessWidget {
       ),
       physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) => InkWell(
-        child: elementgridcard(context, index,state),
+        child: elementgridcard(context, index, state),
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: BlocProvider.of<PlaylistBloc>(context),
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider.value(
+                    value: BlocProvider.of<PlaylistBloc>(context)),
+                BlocProvider.value(
+                    value: BlocProvider.of<ShuffleCubit>(context)),
+                BlocProvider.value(value: BlocProvider.of<RepeatCubit>(context))
+              ],
               child: InsidePlaylist(
                 currentplaylistindex: index,
               ),
@@ -97,7 +105,7 @@ class PlaylistScrn extends StatelessWidget {
     );
   }
 
-  Widget elementgridcard(BuildContext ctx,int index,PlaylistState state) {
+  Widget elementgridcard(BuildContext ctx, int index, PlaylistState state) {
     return Material(
       borderRadius: BorderRadius.circular(10),
       elevation: 3,
@@ -119,7 +127,7 @@ class PlaylistScrn extends StatelessWidget {
                 child: PopupMenuButton(
                   onSelected: (value) {
                     value == 1
-                        ? renamePlaylist(ctx, index,state)
+                        ? renamePlaylist(ctx, index, state)
                         : deletePlaylist(index, ctx);
                   },
                   shape: RoundedRectangleBorder(
@@ -178,7 +186,7 @@ class PlaylistScrn extends StatelessWidget {
     );
   }
 
-  renamePlaylist(BuildContext context, int index,PlaylistState state) {
+  renamePlaylist(BuildContext context, int index, PlaylistState state) {
     final GlobalKey<FormState> renamekey = GlobalKey();
     var rename = TextEditingController();
     String currentname = state.playlist[index].name;
@@ -222,7 +230,8 @@ class PlaylistScrn extends StatelessWidget {
               onFieldSubmitted: (value) {
                 if (renamekey.currentState!.validate()) {
                   BlocProvider.of<PlaylistBloc>(context).add(
-                      PlaylistE.isrenaming(newname: rename.text.trim(), playlistIndex: index));
+                      PlaylistE.isrenaming(
+                          newname: rename.text.trim(), playlistIndex: index));
                   Navigator.pop(context);
                 }
               },

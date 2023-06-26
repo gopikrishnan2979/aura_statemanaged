@@ -34,7 +34,7 @@ class SplashScreen extends StatelessWidget {
     BlocProvider.of<RecentBloc>(context).add(RecentFetch());
     BlocProvider.of<MostPlayedBloc>(context).add(MostPlayedFetch());
     Timer(const Duration(milliseconds: 1500), () {
-      Navigator.of(context).push(MaterialPageRoute(
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (_) => MultiBlocProvider(
           providers: [
             BlocProvider.value(

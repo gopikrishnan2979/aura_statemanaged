@@ -2,6 +2,8 @@ import 'package:auramusic/application/favorite_bloc/favorite_bloc.dart';
 import 'package:auramusic/application/miniplyr_state_bloc/miniplayer_bloc.dart';
 import 'package:auramusic/application/playlist_bloc/playlist_bloc.dart';
 import 'package:auramusic/application/recent_bloc/recent_bloc.dart';
+import 'package:auramusic/application/repeat_cubit/repeat_cubit.dart';
+import 'package:auramusic/application/shuffle_cubit/shuffle_cubit.dart';
 import 'package:auramusic/infrastructure/functions/player_function.dart';
 import 'package:auramusic/presentation/common_widget/favoritewidget.dart';
 import 'package:auramusic/presentation/common_widget/listtilecustom.dart';
@@ -63,8 +65,8 @@ class RecentScrn extends StatelessWidget {
                   ),
                 ),
                 BlocBuilder<RecentBloc, RecentState>(
-                  builder: (context, resstate) => Expanded(
-                    child: listtilebuilder(resstate),
+                  builder: (ctx, resstate) => Expanded(
+                    child: listtilebuilder(resstate, context),
                   ),
                 )
               ],
@@ -84,7 +86,7 @@ class RecentScrn extends StatelessWidget {
     );
   }
 
-  Widget listtilebuilder(RecentState resstate) {
+  Widget listtilebuilder(RecentState resstate, BuildContext ctx) {
     return resstate.recentlist.isEmpty
         ? songlistempty()
         : ListView.builder(
@@ -93,15 +95,22 @@ class RecentScrn extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) => InkWell(
               onTap: () {
-                
                 playAudio(songs: resstate.recentlist, index: index);
-                BlocProvider.of<MiniplayerBloc>(context).add(MiniplayerEvent());
+                BlocProvider.of<MiniplayerBloc>(ctx).add(MiniplayerEvent());
                 showModalBottomSheet(
                     context: context,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                     backgroundColor: const Color(0xFF202EAF),
-                    builder: (context) => const MiniPlayer());
+                    builder: (_) => MultiBlocProvider(
+                          providers: [
+                            BlocProvider.value(
+                                value: BlocProvider.of<ShuffleCubit>(ctx)),
+                            BlocProvider.value(
+                                value: BlocProvider.of<RepeatCubit>(ctx))
+                          ],
+                          child: const MiniPlayer(),
+                        ));
               },
               child: ListTileCustom(
                 index: index,
