@@ -135,6 +135,7 @@ Future<List<Songs>> mostplayedfetch() async {
 
 //--------------Fetching recently played songs from the database-------------
 
+
 Future<List<Songs>> recentfetch() async {
   Box<int> recentDb = await Hive.openBox('recent');
   List<Songs> recent = [];

@@ -42,98 +42,78 @@ class HomeScreen extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topRight,
                       end: Alignment.centerLeft,
-                      colors: [
-                        Color(0xFF000000),
-                        Color(0xFF0B0E38),
-                        Color(0xFF202EAF)
-                      ],
+                      colors: [Color(0xFF000000), Color(0xFF0B0E38), Color(0xFF202EAF)],
                     ),
                   ),
                   child: allsongs.isEmpty
                       ? songlistempty()
                       : Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10.0, right: 10, top: 15),
+                          padding: const EdgeInsets.only(left: 10.0, right: 10, top: 15),
                           child: Column(
                             children: [
                               Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 4.0, bottom: 4),
+                                padding: const EdgeInsets.only(top: 4.0, bottom: 4),
                                 child: icontextheading(
-                                    FontAwesomeIcons.layerGroup,
-                                    'Library',
-                                    context),
+                                    FontAwesomeIcons.layerGroup, 'Library', context),
                               ),
 
                               Row(
                                 // Library  row section
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
                                   InkWell(
                                     onTap: () {
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                              builder: (_) => MultiBlocProvider(
-                                                    providers: [
-                                                      BlocProvider.value(
-                                                          value: BlocProvider
-                                                              .of<MostPlayedBloc>(
-                                                                  context)),
-                                                      BlocProvider.value(
-                                                          value: BlocProvider
-                                                              .of<ShuffleCubit>(
-                                                                  context)),
-                                                      BlocProvider.value(
-                                                          value: BlocProvider
-                                                              .of<RepeatCubit>(
-                                                                  context)),
-                                                      BlocProvider.value(
-                                                          value: BlocProvider
-                                                              .of<MiniplayerBloc>(
-                                                                  context))
-                                                    ],
-                                                    child:
-                                                        const MostPlayedScrn(),
-                                                  )));
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                          builder: (_) => MultiBlocProvider(
+                                                providers: [
+                                                  BlocProvider.value(
+                                                      value:
+                                                          BlocProvider.of<MostPlayedBloc>(context)),
+                                                  BlocProvider.value(
+                                                      value:
+                                                          BlocProvider.of<ShuffleCubit>(context)),
+                                                  BlocProvider.value(
+                                                      value: BlocProvider.of<RepeatCubit>(context)),
+                                                  BlocProvider.value(
+                                                      value:
+                                                          BlocProvider.of<MiniplayerBloc>(context))
+                                                ],
+                                                child: const MostPlayedScrn(),
+                                              )));
                                     },
                                     child: librarycard(
                                         context: context,
-                                        imgsrc:
-                                            'assets/images/mostplayedbg.png',
+                                        imgsrc: 'assets/images/mostplayedbg.png',
                                         title: 'Most Played'),
                                   ),
                                   InkWell(
                                     child: librarycard(
-                                        context: context,
-                                        imgsrc: 'assets/images/recentbg.png',
-                                        title: 'Recent'),
+                                      context: context,
+                                      imgsrc: 'assets/images/recentbg.png',
+                                      title: 'Recent',
+                                    ),
                                     onTap: () {
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                        builder: (_) => MultiBlocProvider(
-                                                    providers: [
-                                                      BlocProvider.value(
-                                                          value: BlocProvider
-                                                              .of<RecentBloc>(
-                                                                  context)),
-                                                      BlocProvider.value(
-                                                          value: BlocProvider
-                                                              .of<ShuffleCubit>(
-                                                                  context)),
-                                                      BlocProvider.value(
-                                                          value: BlocProvider
-                                                              .of<RepeatCubit>(
-                                                                  context)),
-                                                      BlocProvider.value(
-                                                          value: BlocProvider
-                                                              .of<MiniplayerBloc>(
-                                                                  context))
-                                                    ],
-                                                    child:
-                                                        const RecentScrn(),
-                                                  )
-                                      ));
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) => MultiBlocProvider(
+                                            providers: [
+                                              BlocProvider.value(
+                                                value: BlocProvider.of<RecentBloc>(context),
+                                              ),
+                                              BlocProvider.value(
+                                                value: BlocProvider.of<ShuffleCubit>(context),
+                                              ),
+                                              BlocProvider.value(
+                                                value: BlocProvider.of<RepeatCubit>(context),
+                                              ),
+                                              BlocProvider.value(
+                                                value: BlocProvider.of<MiniplayerBloc>(context),
+                                              )
+                                            ],
+                                            child: const RecentScrn(),
+                                          ),
+                                        ),
+                                      );
                                     },
                                   )
                                 ],
@@ -142,8 +122,7 @@ class HomeScreen extends StatelessWidget {
                                 height: 10,
                               ),
 
-                              icontextheading(
-                                  FontAwesomeIcons.music, 'Songs', context),
+                              icontextheading(FontAwesomeIcons.music, 'Songs', context),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -162,18 +141,18 @@ class HomeScreen extends StatelessWidget {
       children: [
         FaIcon(icon, color: fontcolor),
         Padding(
-          padding:
-              EdgeInsets.only(left: MediaQuery.of(context).size.height * 0.01),
-          child: Text(title,
-              style: const TextStyle(color: fontcolor, fontSize: 19)),
+          padding: EdgeInsets.only(left: MediaQuery.of(context).size.height * 0.01),
+          child: Text(
+            title,
+            style: const TextStyle(color: fontcolor, fontSize: 19),
+          ),
         )
       ],
     );
   }
 
 //Library
-  Widget librarycard(
-      {required context, required String imgsrc, required String title}) {
+  Widget librarycard({required context, required String imgsrc, required String title}) {
     return Card(
       shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(10)),
       elevation: 5,
@@ -187,23 +166,25 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           Positioned(
-              bottom: 0,
-              child: Container(
-                decoration: const BoxDecoration(
-                    color: Color(0xFF0C1242),
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10))),
-                width: MediaQuery.of(context).size.width * 0.35,
-                height: MediaQuery.of(context).size.width * 0.1,
-                child: Center(
-                  child: Text(
-                    title,
-                    style:
-                        const TextStyle(color: Color(0xFFE8E8E8), fontSize: 15),
-                  ),
+            bottom: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF0C1242),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
                 ),
-              ))
+              ),
+              width: MediaQuery.of(context).size.width * 0.35,
+              height: MediaQuery.of(context).size.width * 0.1,
+              child: Center(
+                child: Text(
+                  title,
+                  style: const TextStyle(color: Color(0xFFE8E8E8), fontSize: 15),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -234,6 +215,7 @@ class HomeScreen extends StatelessWidget {
                 quality: 100,
                 artworkQuality: FilterQuality.high,
                 artworkBorder: BorderRadius.circular(7),
+                keepOldArtwork: true,
                 artworkFit: BoxFit.cover,
                 id: allsongs[index].id,
                 type: ArtworkType.AUDIO,
@@ -254,13 +236,9 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               subtitle: Text(
-                allsongs[index].artist != null
-                    ? '${allsongs[index].artist}'
-                    : 'Unknown',
+                allsongs[index].artist != null ? '${allsongs[index].artist}' : 'Unknown',
                 style: const TextStyle(
-                    color: fontcolor,
-                    overflow: TextOverflow.ellipsis,
-                    fontSize: artistfontsize),
+                    color: fontcolor, overflow: TextOverflow.ellipsis, fontSize: artistfontsize),
               ),
               trailing1: BlocBuilder<FavoriteBloc, FavoriteState>(
                 builder: (context, favstate) {
@@ -271,11 +249,9 @@ class HomeScreen extends StatelessWidget {
                 },
               ),
               trailing2: Theme(
-                data: Theme.of(context)
-                    .copyWith(cardColor: const Color(0xFF87BEFF)),
+                data: Theme.of(context).copyWith(cardColor: const Color(0xFF87BEFF)),
                 child: PopupMenuButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   icon: const Icon(
                     Icons.more_vert,
                     color: fontcolor,
@@ -289,8 +265,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     )
                   ],
-                  onSelected: (value) =>
-                      Navigator.of(context).push(MaterialPageRoute(
+                  onSelected: (value) => Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => BlocProvider.value(
                       value: BlocProvider.of<PlaylistBloc>(context),
                       child: AddToPlaylist(addingsong: allsongs[index]),

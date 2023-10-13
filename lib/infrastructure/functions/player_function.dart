@@ -9,13 +9,15 @@ currentlyplaying = songs[index];
   player.stop();
   playinglistAudio = [];
   for (int i = 0; i < songs.length; i++) {
-    playinglistAudio.add(Audio.file(songs[i].songurl!,
+    playinglistAudio.add(Audio.file(
+      songs[i].songurl!,
         metas: Metas(
           title: songs[i].songname,
           artist: songs[i].artist,
           id: songs[i].id.toString(),
         )));
   }
+
   //-------Making the audios play------
   await player.open(
       Playlist(

@@ -25,70 +25,67 @@ class Search extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 20, 30, 124),
       body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.centerLeft,
-              colors: [Color(0xFF000000), Color(0xFF0B0E38), Color(0xFF202EAF)],
-            ),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.centerLeft,
+            colors: [Color(0xFF000000), Color(0xFF0B0E38), Color(0xFF202EAF)],
           ),
-          child: allsongs.isEmpty
-              ? const Center(
-                  child: Text(
-                    'No songs found',
-                    style: TextStyle(fontSize: 20, color: Colors.grey),
-                  ),
-                )
-              : Padding(
-                  padding:
-                      const EdgeInsets.only(top: 10.0, right: 10, left: 10),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.1,
-                        child: Center(
-                          child: BlocBuilder<FavoriteBloc, FavoriteState>(
-                            builder: (context, favstate) {
-                              return TextField(
-                                  controller: searchController,
-                                  style: const TextStyle(fontSize: 20),
-                                  decoration: InputDecoration(
-                                      contentPadding:
-                                          const EdgeInsets.only(top: 10),
-                                      prefixIcon: const Icon(Icons.search),
-                                      hintStyle: const TextStyle(fontSize: 20),
-                                      hintText: 'Search',
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      filled: true,
-                                      fillColor: const Color(0xFFCFD2EB)),
-                                  onChanged: (value) =>
-                                      BlocProvider.of<SearchBloc>(context)
-                                          .add(SearchEvent(querry: value))
-                                  // BlocProvider.of<SearchBloc>(context)
-                                  //     .add(SearchEvent(querry: value)),
-                                  );
-                            },
-                          ),
+        ),
+        child: allsongs.isEmpty
+            ? const Center(
+                child: Text(
+                  'No songs found',
+                  style: TextStyle(fontSize: 20, color: Colors.grey),
+                ),
+              )
+            : Padding(
+                padding: const EdgeInsets.only(top: 10.0, right: 10, left: 10),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      child: Center(
+                        child: BlocBuilder<FavoriteBloc, FavoriteState>(
+                          builder: (context, favstate) {
+                            return TextField(
+                              controller: searchController,
+                              style: const TextStyle(fontSize: 20),
+                              decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.only(top: 10),
+                                  prefixIcon: const Icon(Icons.search),
+                                  hintStyle: const TextStyle(fontSize: 20),
+                                  hintText: 'Search',
+                                  border:
+                                      OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                  filled: true,
+                                  fillColor: const Color(0xFFCFD2EB)),
+                              onChanged: (value) => BlocProvider.of<SearchBloc>(context).add(
+                                SearchEvent(querry: value),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                      BlocBuilder<SearchBloc, SearchState>(
-                        builder: (context, state) {
-                          return Expanded(
-                              child: searchController.text.isEmpty ||
-                                      searchController.text.trim().isEmpty
+                    ),
+                    BlocBuilder<SearchBloc, SearchState>(
+                      builder: (context, state) {
+                        return Expanded(
+                          child:
+                              searchController.text.isEmpty || searchController.text.trim().isEmpty
                                   ? fullListshow(
                                       context,
                                     )
                                   : state.searchdata.isEmpty
                                       ? searchisempty()
-                                      : searchfound(context, state));
-                        },
-                      )
-                    ],
-                  ),
-                )),
+                                      : searchfound(context, state),
+                        );
+                      },
+                    )
+                  ],
+                ),
+              ),
+      ),
     );
   }
 
@@ -133,15 +130,13 @@ class Search extends StatelessWidget {
           playAudio(songs: allsongs, index: songindex);
           BlocProvider.of<MiniplayerBloc>(context).add(MiniplayerEvent());
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) =>  MultiBlocProvider(
-              providers: [
-                BlocProvider.value(value: BlocProvider.of<ShuffleCubit>(context)),
-                BlocProvider.value(value: BlocProvider.of<RepeatCubit>(context)),
-              ],
-              child: const PlayingScreen(),
-            )
-          ));
-          
+              builder: (_) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider.value(value: BlocProvider.of<ShuffleCubit>(context)),
+                      BlocProvider.value(value: BlocProvider.of<RepeatCubit>(context)),
+                    ],
+                    child: const PlayingScreen(),
+                  )));
         },
         child: ListTileCustom(
             index: index,
@@ -175,21 +170,17 @@ class Search extends StatelessWidget {
                   ? '${searchstate.searchdata[index].artist}'
                   : 'Unknown',
               style: const TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  fontSize: artistfontsize,
-                  color: fontcolor),
+                  overflow: TextOverflow.ellipsis, fontSize: artistfontsize, color: fontcolor),
             ),
             trailing1: BlocBuilder<FavoriteBloc, FavoriteState>(
               builder: (context, favstate) {
                 return FavoriteButton(
-                    isfav: favstate.favorite
-                        .contains(searchstate.searchdata[index]),
+                    isfav: favstate.favorite.contains(searchstate.searchdata[index]),
                     currentSong: searchstate.searchdata[index]);
               },
             ),
             trailing2: Theme(
-              data: Theme.of(context)
-                  .copyWith(cardColor: const Color(0xFF87BEFF)),
+              data: Theme.of(context).copyWith(cardColor: const Color(0xFF87BEFF)),
               child: PopupMenuButton(
                 icon: const Icon(
                   Icons.more_vert,
@@ -200,17 +191,14 @@ class Search extends StatelessWidget {
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (_) => BlocProvider.value(
                         value: BlocProvider.of<PlaylistBloc>(context),
-                        child: AddToPlaylist(
-                            addingsong: searchstate.searchdata[index]),
+                        child: AddToPlaylist(addingsong: searchstate.searchdata[index]),
                       ),
                     ));
                   }
                 },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
-                itemBuilder: (context) => const [
-                  PopupMenuItem(value: 0, child: Text('Add to playlist'))
-                ],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                itemBuilder: (context) =>
+                    const [PopupMenuItem(value: 0, child: Text('Add to playlist'))],
               ),
             )),
       ),
@@ -268,9 +256,7 @@ class Search extends StatelessWidget {
             subtitle: Text(
               '${allsongs[index].artist}',
               style: const TextStyle(
-                  fontSize: artistfontsize,
-                  overflow: TextOverflow.ellipsis,
-                  color: fontcolor),
+                  fontSize: artistfontsize, overflow: TextOverflow.ellipsis, color: fontcolor),
             ),
             trailing1: BlocBuilder<FavoriteBloc, FavoriteState>(
               builder: (context, favstate) {
@@ -281,8 +267,7 @@ class Search extends StatelessWidget {
               },
             ),
             trailing2: Theme(
-              data: Theme.of(context)
-                  .copyWith(cardColor: const Color(0xFF87BEFF)),
+              data: Theme.of(context).copyWith(cardColor: const Color(0xFF87BEFF)),
               child: PopupMenuButton(
                 onSelected: (value) {
                   if (value == 0) {
@@ -294,15 +279,13 @@ class Search extends StatelessWidget {
                     ));
                   }
                 },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 icon: const Icon(
                   Icons.more_vert,
                   color: fontcolor,
                 ),
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: 0, child: Text('Add to playlist'))
-                ],
+                itemBuilder: (context) =>
+                    [const PopupMenuItem(value: 0, child: Text('Add to playlist'))],
               ),
             )),
       ),
